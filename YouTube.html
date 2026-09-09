@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Waseem YouTube Thumbnail Downloader — Pro</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet" />
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* ============================================================
+                   FULL PAGE RESET + ANIMATED GRADIENT BACKGROUND
+                ============================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background: #0a0a1a;
+            position: relative;
+        }
+
+        /* ---- Animated Gradient Background ---- */
+        .animated-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background: linear-gradient(-45deg, #0a0a1a, #1a0a2e, #0a1a3a, #2a0a2e);
+            background-size: 400% 400%;
+            animation: gradientShift 14s ease-in-out infinite alternate;
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+            25% {
+                background-position: 50% 0%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            75% {
+                background-position: 50% 100%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* ---- Large Glowing Orbs (YouTube Red Theme) ---- */
+        .neon-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(140px);
+            z-index: 1;
+            pointer-events: none;
+            animation: orbFloat 22s ease-in-out infinite alternate;
+        }
+        .neon-orb.orb-red {
+            width: 600px;
+            height: 600px;
+            background: #ff0033;
+            top: -200px;
+            right: -150px;
+            opacity: 0.25;
+            animation-delay: 0s;
+        }
+        .neon-orb.orb-dark {
+            width: 550px;
+            height: 550px;
+            background: #1a1a2e;
+            bottom: -150px;
+            left: -120px;
+            opacity: 0.3;
+            animation-delay: -4s;
+        }
+        .neon-orb.orb-gold {
+            width: 500px;
+            height: 500px;
+            background: #fbbf24;
+            top: 40%;
+            left: 65%;
+            transform: translate(-50%, -50%);
+            opacity: 0.15;
+            animation-delay: -8s;
+        }
+        .neon-orb.orb-white {
+            width: 400px;
+            height: 400px;
+            background: #ffffff;
+            top: 5%;
+            left: 15%;
+            opacity: 0.06;
+            animation-delay: -12s;
+        }
+
+        @keyframes orbFloat {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+            100% {
+                transform: translate(70px, -60px) scale(1.3);
+            }
+        }
+
+        /* ---- Particle Canvas ---- */
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* ============================================================
+                   LARGE GLASS CARD — BARA AUR SPACIOUS
+                ============================================================ */
+        .glass-card {
+            position: relative;
+            z-index: 10;
+            max-width: 1100px;
+            width: 100%;
+            max-height: 92vh;
+            overflow-y: auto;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(56px) saturate(1.6);
+            -webkit-backdrop-filter: blur(56px) saturate(1.6);
+            border-radius: 72px;
+            padding: 56px 56px 40px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow:
+                0 50px 120px -25px rgba(0, 0, 0, 0.9),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.05),
+                0 0 100px rgba(255, 0, 51, 0.04);
+            animation: cardEntry 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.6s ease;
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 45%;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0.06), transparent);
+            border-radius: 72px 72px 0 0;
+            pointer-events: none;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 70px 140px -25px rgba(0, 0, 0, 0.95),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.07),
+                0 0 120px rgba(255, 0, 51, 0.06);
+        }
+
+        .glass-card::-webkit-scrollbar {
+            width: 5px;
+        }
+        .glass-card::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .glass-card::-webkit-scrollbar-thumb {
+            background: rgba(255, 0, 51, 0.3);
+            border-radius: 10px;
+        }
+
+        @keyframes cardEntry {
+            0% {
+                opacity: 0;
+                transform: scale(0.94) translateY(40px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        /* ============================================================
+                   NAVBAR — HAMZA BRAND (YouTube Themed)
+                ============================================================ */
+        .nav-pro {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 32px;
+            position: relative;
+            z-index: 5;
+        }
+
+        .brand-pro {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            text-decoration: none;
+        }
+
+        .brand-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #ff0033, #ff6b00, #fbbf24);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 32px;
+            box-shadow: 0 10px 40px rgba(255, 0, 51, 0.25);
+            transition: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .brand-pro:hover .brand-icon {
+            transform: rotate(-8deg) scale(1.08);
+            box-shadow: 0 16px 56px rgba(255, 0, 51, 0.4);
+        }
+
+        .brand-text {
+            font-weight: 900;
+            font-size: 2.2rem;
+            letter-spacing: -0.5px;
+            background: linear-gradient(to right, #ffffff, #fca5a5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-text span {
+            background: linear-gradient(135deg, #ff0033, #fbbf24);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .badge-pro {
+            background: rgba(255, 0, 51, 0.08);
+            border: 1px solid rgba(255, 0, 51, 0.12);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 8px 22px;
+            border-radius: 100px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            backdrop-filter: blur(4px);
+        }
+
+        /* ============================================================
+                   HERO — YOUTUBE THEMED
+                ============================================================ */
+        .hero-pro {
+            text-align: center;
+            margin-bottom: 36px;
+            position: relative;
+            z-index: 5;
+        }
+
+        .hero-pro h1 {
+            font-weight: 900;
+            font-size: clamp(3rem, 7.5vw, 5rem);
+            line-height: 1.05;
+            background: linear-gradient(to right, #ffffff 0%, #ff0033 40%, #fbbf24 70%, #ff6b00 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+            letter-spacing: -1.5px;
+        }
+
+        .hero-pro .subhead {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .hero-pro .subhead strong {
+            color: #e2e8f0;
+            font-weight: 600;
+        }
+
+        .live-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(52, 211, 153, 0.08);
+            border: 1px solid rgba(52, 211, 153, 0.15);
+            padding: 6px 20px 6px 14px;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            color: #6ee7b7;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .live-dot {
+            width: 9px;
+            height: 9px;
+            background: #34d399;
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulseDot 1.6s ease-in-out infinite;
+        }
+
+        @keyframes pulseDot {
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.3;
+                transform: scale(0.6);
+            }
+        }
+
+        .stats-row {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-top: 18px;
+            flex-wrap: wrap;
+        }
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255, 255, 255, 0.2);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .stat-item .num {
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        .stat-item .icon-neon {
+            color: #ff0033;
+        }
+
+        /* ============================================================
+                   INPUT — YOUTUBE STYLE
+                ============================================================ */
+        .input-pro {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 28px;
+            position: relative;
+            z-index: 5;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            background: rgba(255, 255, 255, 0.035);
+            border: 2px solid rgba(255, 255, 255, 0.06);
+            border-radius: 80px;
+            padding: 6px 6px 6px 32px;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: inset 0 2px 12px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(8px);
+        }
+
+        .input-group:focus-within {
+            border-color: #ff0033;
+            background: rgba(255, 0, 51, 0.05);
+            box-shadow: 0 0 0 6px rgba(255, 0, 51, 0.08), inset 0 2px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .input-group .icon-wrap {
+            color: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            margin-right: 8px;
+        }
+
+        .input-group input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 20px 0;
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #fff;
+            outline: none;
+            min-width: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.15);
+            font-weight: 400;
+        }
+
+        .input-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        /* ---- LARGE NEON BUTTONS (YouTube Red) ---- */
+        .btn-fetch {
+            background: linear-gradient(135deg, #ff0033, #ff6b00, #fbbf24);
+            border: none;
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.05rem;
+            padding: 16px 44px;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            white-space: nowrap;
+            box-shadow: 0 10px 36px rgba(255, 0, 51, 0.15);
+            letter-spacing: 0.3px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-fetch::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 60px;
+            background: linear-gradient(135deg, #fbbf24, #ff6b00, #ff0033);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        .btn-fetch:hover::before {
+            opacity: 1;
+        }
+        .btn-fetch:hover {
+            transform: scale(1.06) translateY(-4px);
+            box-shadow: 0 20px 56px rgba(255, 0, 51, 0.45);
+        }
+        .btn-fetch:active {
+            transform: scale(0.94) translateY(0px);
+        }
+        .btn-fetch:disabled {
+            opacity: 0.5;
+            pointer-events: none;
+            transform: scale(0.97);
+        }
+        .btn-fetch * {
+            position: relative;
+            z-index: 2;
+        }
+
+        .btn-copy {
+            background: rgba(255, 255, 255, 0.04);
+            border: 2px solid rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.3);
+            padding: 16px 20px;
+            border-radius: 60px;
+            cursor: pointer;
+            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        .btn-copy:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #ff0033;
+            transform: scale(1.06) translateY(-3px);
+            border-color: rgba(255, 0, 51, 0.2);
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.25);
+        }
+        .btn-copy:active {
+            transform: scale(0.92);
+        }
+
+        .copy-feedback {
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(52, 211, 153, 0.12);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(52, 211, 153, 0.15);
+            color: #6ee7b7;
+            font-size: 0.6rem;
+            font-weight: 600;
+            padding: 3px 14px;
+            border-radius: 20px;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+        .copy-feedback.show {
+            opacity: 1;
+        }
+
+        /* ============================================================
+                   LOADER
+                ============================================================ */
+        .loader-pro {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            padding: 10px 0 6px;
+            color: rgba(255, 255, 255, 0.4);
+            font-weight: 500;
+            font-size: 1rem;
+            position: relative;
+            z-index: 5;
+        }
+
+        .loader-pro.active {
+            display: flex;
+            animation: fadeSlide 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .loader-pro .spinner-ring {
+            width: 32px;
+            height: 32px;
+            border: 3px solid rgba(255, 255, 255, 0.05);
+            border-top-color: #ff0033;
+            border-radius: 50%;
+            animation: spin 0.8s cubic-bezier(0.6, 0, 0.4, 1) infinite;
+        }
+
+        .loader-pro .spinner-ring.secondary {
+            border-top-color: #fbbf24;
+            animation-duration: 1s;
+            width: 20px;
+            height: 20px;
+            border-width: 2.5px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes fadeSlide {
+            0% {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ============================================================
+                   RESULT — THUMBNAIL PREVIEW WITH RESOLUTIONS
+                ============================================================ */
+        .result-pro {
+            margin-top: 6px;
+            display: none;
+            border-radius: 40px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 24px;
+            backdrop-filter: blur(16px);
+            animation: fadeSlide 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            position: relative;
+            z-index: 5;
+        }
+
+        .result-pro.active {
+            display: block;
+        }
+
+        .thumbnail-wrapper {
+            position: relative;
+            border-radius: 28px;
+            overflow: hidden;
+            background: #0a0b1a;
+            box-shadow: 0 25px 70px -20px rgba(0, 0, 0, 0.7);
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 200px;
+        }
+
+        .thumbnail-wrapper img {
+            display: block;
+            width: 100%;
+            max-height: 420px;
+            object-fit: contain;
+            background: #0a0b1a;
+            border-radius: 28px;
+        }
+
+        .thumbnail-meta {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .thumbnail-meta .info {
+            flex: 1;
+            min-width: 160px;
+        }
+
+        .thumbnail-meta .info .title {
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.3;
+        }
+
+        .thumbnail-meta .info .channel {
+            color: rgba(255, 255, 255, 0.35);
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .resolution-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }        .resolution-group a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-decoration: none;
+            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .resolution-group a:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.25);
+        }
+
+        .resolution-group .btn-sd {
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+        .resolution-group .btn-sd:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        .resolution-group .btn-hd {
+            background: linear-gradient(135deg, #ff0033, #ff6b00);
+            border: none;
+            box-shadow: 0 8px 28px rgba(255, 0, 51, 0.15);
+            color: #fff;
+        }
+        .resolution-group .btn-hd:hover {
+            box-shadow: 0 14px 48px rgba(255, 0, 51, 0.35);
+            background: linear-gradient(135deg, #ff1a44, #ff7a1a);
+        }
+
+        .resolution-group .btn-4k {
+            background: linear-gradient(135deg, #fbbf24, #ff6b00);
+            border: none;
+            box-shadow: 0 8px 28px rgba(251, 191, 36, 0.15);
+            color: #fff;
+        }
+        .resolution-group .btn-4k:hover {
+            box-shadow: 0 14px 48px rgba(251, 191, 36, 0.35);
+            background: linear-gradient(135deg, #fcd34d, #ff7a1a);
+        }
+
+        /* ============================================================
+                   FOOTER — ALIRAZA CREDIT
+                ============================================================ */
+        .footer-pro {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+            padding-top: 28px;
+            letter-spacing: 0.4px;
+            font-weight: 400;
+            position: relative;
+            z-index: 5;
+        }
+
+        .footer-pro .credit {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .footer-pro .credit .label {
+            color: rgba(255, 255, 255, 0.2);
+            font-weight: 400;
+        }
+
+        .footer-pro .credit .name {
+            font-weight: 800;
+            font-size: 1.3rem;
+            background: linear-gradient(135deg, #ff0033, #fbbf24, #ff6b00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 0.5px;
+            position: relative;
+        }
+
+        .footer-pro .credit .name::after {
+            content: '✨';
+            font-size: 0.75rem;
+            -webkit-text-fill-color: initial;
+            color: #fbbf24;
+            margin-left: 4px;
+            display: inline-block;
+            animation: sparkle 2.5s ease-in-out infinite;
+        }
+
+        @keyframes sparkle {
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0deg);
+            }
+            50% {
+                opacity: 0.3;
+                transform: scale(1.3) rotate(20deg);
+            }
+        }
+
+        .footer-pro .credit .role {
+            color: rgba(255, 255, 255, 0.12);
+            font-size: 0.8rem;
+            font-weight: 400;
+        }
+
+        .footer-pro .heart {
+            color: #ff0033;
+            display: inline-block;
+            animation: heartBeat 2s ease-in-out infinite;
+            -webkit-text-fill-color: initial;
+        }
+
+        @keyframes heartBeat {
+            0%,
+            100% {
+                transform: scale(1);
+            }
+            15% {
+                transform: scale(1.3);
+            }
+            30% {
+                transform: scale(1);
+            }
+            45% {
+                transform: scale(1.2);
+            }
+            60% {
+                transform: scale(1);
+            }
+        }
+
+        .footer-pro .sub-credit {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.05);
+            margin-top: 6px;
+            letter-spacing: 0.6px;
+        }
+
+        /* ============================================================
+                   RESPONSIVE
+                ============================================================ */
+        @media (max-width: 820px) {
+            .glass-card {
+                padding: 36px 24px 28px;
+                border-radius: 48px;
+                max-height: 92vh;
+            }
+            .brand-text {
+                font-size: 1.6rem;
+            }
+            .brand-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 24px;
+            }
+            .hero-pro h1 {
+                font-size: 2.8rem;
+            }
+            .hero-pro .subhead {
+                font-size: 1rem;
+            }
+            .input-group {
+                flex-wrap: wrap;
+                background: transparent;
+                padding: 0;
+                border: none;
+                box-shadow: none;
+                gap: 12px;
+            }
+            .input-group .icon-wrap {
+                display: none;
+            }
+            .input-group input {
+                background: rgba(255, 255, 255, 0.04);
+                border: 2px solid rgba(255, 255, 255, 0.06);
+                border-radius: 60px;
+                padding: 16px 24px;
+                width: 100%;
+                font-size: 1rem;
+            }
+            .input-group input:focus {
+                border-color: #ff0033;
+                box-shadow: 0 0 0 5px rgba(255, 0, 51, 0.06);
+            }
+            .input-actions {
+                width: 100%;
+                flex-wrap: wrap;
+            }
+            .btn-fetch {
+                flex: 1;
+                justify-content: center;
+                padding: 16px 22px;
+                min-width: 120px;
+                font-size: 0.95rem;
+            }
+            .btn-copy {
+                padding: 16px 18px;
+            }
+            .thumbnail-meta {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .resolution-group {
+                width: 100%;
+            }
+            .resolution-group a {
+                flex: 1;
+                justify-content: center;
+                padding: 12px 18px;
+                font-size: 0.8rem;
+            }
+            .stats-row {
+                gap: 18px;
+            }
+            .stat-item {
+                font-size: 0.8rem;
+            }
+            .stat-item .num {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .glass-card {
+                padding: 24px 16px 20px;
+                border-radius: 36px;
+                max-height: 95vh;
+            }
+            .brand-text {
+                font-size: 1.3rem;
+            }
+            .brand-icon {
+                width: 42px;
+                height: 42px;
+                font-size: 20px;
+            }
+            .hero-pro h1 {
+                font-size: 2rem;
+            }
+            .hero-pro .subhead {
+                font-size: 0.85rem;
+                gap: 8px;
+            }
+            .badge-pro {
+                font-size: 0.55rem;
+                padding: 4px 12px;
+            }
+            .thumbnail-wrapper img {
+                max-height: 240px;
+            }
+            .btn-fetch {
+                font-size: 0.85rem;
+                padding: 14px 16px;
+            }
+            .footer-pro .credit {
+                flex-direction: column;
+                gap: 2px;
+            }
+            .footer-pro .credit .name {
+                font-size: 1.1rem;
+            }
+        }
+
+        @media (max-height: 720px) {
+            .glass-card {
+                padding: 28px 20px 20px;
+                max-height: 96vh;
+            }
+            .hero-pro {
+                margin-bottom: 20px;
+            }
+            .hero-pro h1 {
+                font-size: 2.4rem;
+            }
+            .input-pro {
+                margin-bottom: 18px;
+            }
+            .footer-pro {
+                margin-top: 24px;
+                padding-top: 18px;
+            }
+            .thumbnail-wrapper img {
+                max-height: 280px;
+            }
+            .stats-row {
+                gap: 14px;
+            }
+            .stat-item {
+                font-size: 0.7rem;
+            }
+            .stat-item .num {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body><!-- ===== ANIMATED BACKGROUND ===== -->
+    <div class="animated-bg"></div>
+    <div class="neon-orb orb-red"></div>
+    <div class="neon-orb orb-dark"></div>
+    <div class="neon-orb orb-gold"></div>
+    <div class="neon-orb orb-white"></div>
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- ===== LARGE GLASS CARD ===== -->
+    <div class="glass-card">
+
+        <!-- NAV — Waseem -->
+        <nav class="nav-pro">
+            <a href="#" class="brand-pro">
+                <div class="brand-icon">
+                    <i data-lucide="youtube" style="width: 28px; height: 28px;"></i>
+                </div>
+                <span class="brand-text">Waseem <span>YT</span> Thumbnail</span>
+            </a>
+            <span class="badge-pro"><i data-lucide="shield-check" style="width: 14px; height: 14px; display: inline-block; margin-right: 4px;"></i> Pro v1.0</span>
+        </nav>
+
+        <!-- HERO -->
+        <div class="hero-pro">
+            <h1>YouTube Thumbnail Downloader</h1>
+            <div class="subhead">
+                <span>Download thumbnails in <strong>HD &amp; 4K</strong> quality</span>
+                <span class="live-badge">
+                    <span class="live-dot"></span> Live API
+                </span>
+            </div>
+            <div class="stats-row">
+                <span class="stat-item"><span class="icon-neon">⚡</span> <span class="num">Instant</span> fetch</span>
+                <span class="stat-item"><span class="icon-neon">📸</span> <span class="num">4K</span> supported</span>
+                <span class="stat-item"><span class="icon-neon">🌍</span> <span class="num">Free</span> forever</span>
+                <span class="stat-item"><span class="icon-neon">🔒</span> <span class="num">No</span> sign-up</span>
+            </div>
+        </div>
+
+        <!-- INPUT -->
+        <div class="input-pro">
+            <div class="input-group">
+                <span class="icon-wrap">
+                    <i data-lucide="link" style="width: 22px; height: 22px;"></i>
+                </span>
+                <input type="url" id="videoUrl" placeholder="Paste YouTube video URL here..." autocomplete="off" spellcheck="false" />
+                <div class="input-actions">
+                    <button class="btn-copy" id="copyBtn" title="Paste from clipboard">
+                        <i data-lucide="clipboard-paste" style="width: 22px; height: 22px;"></i>
+                        <span class="copy-feedback" id="copyFeedback">✅ Copied!</span>
+                    </button>
+                    <button class="btn-fetch" id="fetchBtn">
+                        <i data-lucide="image" style="width: 20px; height: 20px;"></i>
+                        Get Thumbnail
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- LOADER -->
+        <div class="loader-pro" id="loader">
+            <div class="spinner-ring"></div>
+            <div class="spinner-ring secondary"></div>
+            <span>Fetching thumbnail from YouTube...</span>
+        </div>
+
+        <!-- RESULT -->
+        <div class="result-pro" id="resultCard">
+            <div class="thumbnail-wrapper">
+                <img id="thumbnailImg" src="" alt="Thumbnail Preview" />
+            </div>
+            <div class="thumbnail-meta">
+                <div class="info">
+                    <div class="title" id="videoTitle">Video Title</div>
+                    <div class="channel" id="channelName">@channel</div>
+                </div>
+                <div class="resolution-group">
+                    <a href="#" id="sdLink" class="btn-sd" target="_blank">
+                        <i data-lucide="image" style="width: 14px; height: 14px;"></i>
+                        SD
+                    </a>
+                    <a href="#" id="hdLink" class="btn-hd" target="_blank">
+                        <i data-lucide="image" style="width: 14px; height: 14px;"></i>
+                        HD
+                    </a>
+                    <a href="#" id="maxResLink" class="btn-4k" target="_blank">
+                        <i data-lucide="image" style="width: 14px; height: 14px;"></i>
+                        4K
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER — ALIRAZA -->
+        <footer class="footer-pro">
+            <div class="credit">
+                <span class="label">Crafted with <span class="heart">❤</span> by</span>
+                <span class="name">Waseem Hacker</span>
+                <span class="role">— Full Stack Developer</span>
+            </div>
+            <div class="sub-credit">
+                &copy; 2026 Waseem YouTube Thumbnail Downloader &bull; All Rights Reserved &bull; Made in Pakistan 🇵🇰
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- ============================================================
+    JAVASCRIPT — REAL API + PARTICLES + ALL FEATURES
+    ============================================================ -->
+    <script>
+        // ========================================
+        // 1. PARTICLE BACKGROUND
+        // ========================================
+        const canvas = document.getElementById('particleCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        let mouseX = -9999,
+            mouseY = -9999;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2.5 + 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.35;
+                this.speedY = (Math.random() - 0.5) * 0.35;
+                this.opacity = Math.random() * 0.3 + 0.05;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+
+                const dx = mouseX - this.x;
+                const dy = mouseY - this.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < 140) {
+                    const force = (140 - dist) / 140;
+                    this.x -= dx * force * 0.02;
+                    this.y -= dy * force * 0.02;
+                }
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 200, 200, ${this.opacity})`;
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < 160; i++) {
+            particles.push(new Particle());
+        }
+
+        function drawLines() {
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 150) {
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(255, 100, 100, ${0.04 * (1 - dist / 150)})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { p.update();
+                p.draw(); });
+            drawLines();
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+        document.addEventListener('touchmove', (e) => {
+            const t = e.touches[0];
+            mouseX = t.clientX;
+            mouseY = t.clientY;
+        });
+
+        // ========================================
+        // 2. LUCIDE ICONS
+        // ========================================
+        lucide.createIcons();
+
+        // ========================================
+        // 3. DOM REFS
+        // ========================================
+        const urlInput = document.getElementById('videoUrl');
+        const fetchBtn = document.getElementById('fetchBtn');
+        const copyBtn = document.getElementById('copyBtn');
+        const copyFeedback = document.getElementById('copyFeedback');
+        const loader = document.getElementById('loader');
+        const resultCard = document.getElementById('resultCard');
+        const thumbnailImg = document.getElementById('thumbnailImg');
+        const videoTitle = document.getElementById('videoTitle');
+        const channelName = document.getElementById('channelName');
+        const sdLink = document.getElementById('sdLink');
+        const hdLink = document.getElementById('hdLink');
+        const maxResLink = document.getElementById('maxResLink');
+
+        // ========================================
+        // 4. EXTRACT VIDEO ID FROM YOUTUBE URL
+        // ========================================
+        function extractVideoId(url) {
+            const patterns = [
+                /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/v\/|youtube\.com\/shorts\/)([^&?#]+)/,
+                /youtube\.com\/watch\?.*v=([^&]+)/
+            ];
+            for (const pattern of patterns) {
+                const match = url.match(pattern);
+                if (match) return match[1];
+            }
+            return null;
+        }
+
+        // ========================================
+        // 5. FETCH THUMBNAIL (No API Key Required)
+        // ========================================
+        function fetchThumbnail(url) {
+            try {
+                const videoId = extractVideoId(url);
+                if (!videoId) throw new Error('Invalid YouTube URL');
+
+                // Build thumbnail URLs
+                const sdUrl = `https://img.youtube.com/vi/${videoId}/default.jpg`;
+                const hdUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+                const maxResUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+
+                // Show preview with SD first, then try HD
+                thumbnailImg.src = sdUrl;
+                thumbnailImg.onerror = function() {
+                    // If SD fails, try HQ
+                    this.src = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+                };
+
+                // Set download links
+                sdLink.href = sdUrl;
+                hdLink.href = hdUrl;
+                maxResLink.href = maxResUrl;
+
+                // Try to fetch video title from oEmbed (no API key)
+                fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`)
+                    .then(res => {
+                        if (res.ok) return res.json();
+                        throw new Error('oEmbed failed');
+                    })
+                    .then(data => {
+                        videoTitle.textContent = data.title || 'Unknown Title';
+                        channelName.textContent = data.author_name || 'Unknown Channel';
+                    })
+                    .catch(() => {
+                        videoTitle.textContent = 'YouTube Video';
+                        channelName.textContent = 'YouTube Channel';
+                    });
+
+                // Show result
+                resultCard.classList.add('active');
+                setTimeout(() => {
+                    resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 300);
+
+            } catch (err) {
+                alert('❌ ' + err.message + '\nPlease enter a valid YouTube video URL.');
+                console.error(err);
+            }
+        }
+
+        // ========================================
+        // 6. EVENT BINDINGS
+        // ========================================
+
+        fetchBtn.addEventListener('click', () => {
+            const url = urlInput.value.trim();
+            if (!url) {
+                alert('📌 Please paste a YouTube video URL.');
+                urlInput.focus();
+                return;
+            }
+            if (!url.includes('youtube.com') && !url.includes('youtu.be')) {
+                alert('⚠️ Please enter a valid YouTube link.');
+                return;
+            }
+
+            // Show loader
+            loader.classList.add('active');
+            resultCard.classList.remove('active');
+            thumbnailImg.removeAttribute('src');
+            fetchBtn.disabled = true;
+            fetchBtn.innerHTML =
+                '<span class="spinner-ring" style="width:24px;height:24px;border-width:2.5px;border-top-color:#fff;position:relative;z-index:5;"></span> Processing';
+
+            // Simulate slight delay for smooth UX
+            setTimeout(() => {
+                fetchThumbnail(url);
+                loader.classList.remove('active');
+                fetchBtn.disabled = false;
+                fetchBtn.innerHTML =
+                    '<i data-lucide="image" style="width:20px;height:20px;position:relative;z-index:5;"></i> Get Thumbnail';
+                lucide.createIcons();
+            }, 600);
+        });
+
+        urlInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                fetchBtn.click();
+            }
+        });
+
+        copyBtn.addEventListener('click', async () => {
+            try {
+                const text = await navigator.clipboard.readText();
+                if (text) {
+                    urlInput.value = text;
+                    urlInput.focus();
+                    urlInput.style.borderColor = '#ff0033';
+                    setTimeout(() => { urlInput.style.borderColor = ''; }, 800);
+                    copyFeedback.classList.add('show');
+                    setTimeout(() => {
+                        copyFeedback.classList.remove('show');
+                    }, 2000);
+                }
+            } catch (e) {
+                alert('Unable to read clipboard. Please paste manually.');
+            }
+        });
+
+        window.addEventListener('load', () => {
+            urlInput.focus();
+        });
+
+        // ========================================
+        // 7. SAMPLE TEST (Uncomment to test)
+        // ========================================
+        // urlInput.value = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+    </script>
+
+</body>
+</html>
